@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+import rospy
+from sensor_msgs.msg import CompressedImage
+
+from cv_bridge import CvBridge, CvBridgeError
+
+import cv2
+import depthai as dai
+
+import numpy as np
+
+
+class DepthaiCamera():
+    res = [416, 416]
+    fps = 20.0
+
+    def __init__(self):
+        self.pipeline = dai.Pipeline()
+        self.pub_image = rospy.Publisher(
+            '/depthai_node/image/compressed', CompressedImage, queue_size=10)
+
+        self.br = CvBridge()
+
+        rospy.on_shutdown(lambda: self.shutdown())
+
+    def rgb_camera(self):
+        cam_rgb = self.pipeline.createColorCamera()
+        cam_rgb.setPreviewSize(self.res[0], self.res[1])
+        cam_rgb.setInterleaved(False)
+        cam_rgb.setFps(self.fps)
+
+        # Def xout / xin
+        ctrl_in = self.pipeline.createXLinkIn()
+        ctrl_in.setStreamName("cam_ctrl")
+        ctrl_in.out.link(cam_rgb.inputControl)
+
+        xout_rgb = self.pipeline.createXLinkOut()
+        xout_rgb.setStreamName("video")
+
+        cam_rgb.preview.link(xout_rgb.input)
+
+    def run(self):
+        self.rgb_camera()
+
+        with dai.Device(self.pipeline) as device:
+            video = device.getOutputQueue(
+                name="video", maxSize=1, blocking=False)
+
+            while True:
+                frame = video.get().getCvFrame()
+
+                self.publish_to_ros(frame)
+
+    def publish_to_ros(self, frame):
+        msg_out = CompressedImage()
+        msg_out.header.stamp = rospy.Time.now()
+        msg_out.format = "jpeg"
+        msg_out.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
+
+        self.pub_image.publish(msg_out)
+
+    def shutdown(self):
+        cv2.destroyAllWindows()
+
+
+def main():
+    rospy.init_node('depthai_node')
+    dai_cam = DepthaiCamera()
+
+    while not rospy.is_shutdown():
+        dai_cam.run()
+
+    dai_cam.shutdown()
