@@ -33,7 +33,7 @@ class ArucoDetector():
 
         aruco = self.find_aruco(frame)
 
-        cv2.imshow('aruco', aruco)
+        # cv2.imshow('aruco', aruco)
         cv2.waitKey(1)
 
     def find_aruco(self, frame):
