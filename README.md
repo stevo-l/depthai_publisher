@@ -1,6 +1,13 @@
 # depthai_publisher
 EGB349 OAK-D Lite DepthAI Publisher
 
+## Ensure you have cv-bridge and vision-opencv packages installed using aptitude store
+
+```
+sudo apt-get install ros-noetic-cv-bridge
+sudo apt-get install ros-noetic-vision-opencv
+```
+
 ## Step 1 - Clone Repository
 
 ```
@@ -19,24 +26,24 @@ cd ../
 catkin_make
 ```
 
-## Step 3 - Run the 
+## Step 3 - Run the following ros nodes
 
 #### Terminal 1:
 ```
 roscore
 ```
 
-#### Terminal 2:
+#### Terminal 2 (run oak-d frame publisher):
 ```
 rosrun depthai_publisher dai_publisher
 ```
 
-#### Terminal 3:
+#### Terminal 3 (run arucomarker identification):
 ```
 rosrun depthai_publisher aruco_subscriber
 ```
 
-#### Terminal 4:
+#### Terminal 4 (visualisation):
 ```
 rqt_image_view
 ```

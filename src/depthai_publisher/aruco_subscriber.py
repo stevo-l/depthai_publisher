@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import queue
+import cv2
+
 import rospy
 from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 
-import cv2
 import numpy as np
 
 
@@ -32,9 +32,10 @@ class ArucoDetector():
             rospy.logerr(e)
 
         aruco = self.find_aruco(frame)
+        self.publish_to_ros(self, aruco)
 
         # cv2.imshow('aruco', aruco)
-        cv2.waitKey(1)
+        # cv2.waitKey(1)
 
     def find_aruco(self, frame):
         (corners, ids, _) = cv2.aruco.detectMarkers(
@@ -70,7 +71,7 @@ class ArucoDetector():
         msg_out.format = "jpeg"
         msg_out.data = np.array(cv2.imencode('.jpg', frame)[1]).tostring()
 
-        self.pub_image.publish(msg_out)
+        self.aruco_pub.publish(msg_out)
 
 
 def main():

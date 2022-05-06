@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
+import cv2
+
 import rospy
 from sensor_msgs.msg import CompressedImage
 
 from cv_bridge import CvBridge, CvBridgeError
-
-import cv2
 import depthai as dai
 
 import numpy as np
@@ -15,10 +15,14 @@ class DepthaiCamera():
     res = [416, 416]
     fps = 20.0
 
+    pub_topic = '/depthai_node/image/compressed'
+
     def __init__(self):
         self.pipeline = dai.Pipeline()
         self.pub_image = rospy.Publisher(
-            '/depthai_node/image/compressed', CompressedImage, queue_size=10)
+            self.pub_topic, CompressedImage, queue_size=10)
+
+        rospy.loginfo("Publishing images to rostopic: {}".format(self.pub_topic))
 
         self.br = CvBridge()
 
