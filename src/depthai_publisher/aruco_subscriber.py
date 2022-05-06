@@ -32,7 +32,7 @@ class ArucoDetector():
             rospy.logerr(e)
 
         aruco = self.find_aruco(frame)
-        self.publish_to_ros(self, aruco)
+        self.publish_to_ros(aruco)
 
         # cv2.imshow('aruco', aruco)
         # cv2.waitKey(1)
