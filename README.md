@@ -1,11 +1,17 @@
 # depthai_publisher
 EGB349 OAK-D Lite DepthAI Publisher
 
-## Ensure you have cv-bridge and vision-opencv packages installed using aptitude store
+## Ensure you have cv-bridge and vision-opencv packages installed using aptitude store and install depthai packages using pip
 
 ```
+sudo apt-get install ros-noetic-compressed-image-transport
+sudo apt-get install ros-noetic-camera-info-manager
+sudo apt-get install ros-noetic-rqt-image-view
 sudo apt-get install ros-noetic-cv-bridge
 sudo apt-get install ros-noetic-vision-opencv
+
+sudo apt-get install python3-pip
+python3 -m pip install -U depthai
 ```
 
 ## Step 1 - Clone Repository
