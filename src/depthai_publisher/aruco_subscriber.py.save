@@ -3,7 +3,6 @@
 import cv2
 
 import rospy
-from espeak import espeak
 from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -11,7 +10,7 @@ import numpy as np
 
 
 class ArucoDetector():
-    aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_5X5_50)
+    aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_7X7_50)
     aruco_params = cv2.aruco.DetectorParameters_create()
 
     frame_sub_topic = '/depthai_node/image/compressed'
@@ -44,6 +43,7 @@ class ArucoDetector():
 
         if len(corners) > 0:
             ids = ids.flatten()
+
             for (marker_corner, marker_ID) in zip(corners, ids):
                 corners = marker_corner.reshape((4, 2))
                 (top_left, top_right, bottom_right, bottom_left) = corners
@@ -59,7 +59,6 @@ class ArucoDetector():
                 cv2.line(frame, bottom_left, top_left, (0, 255, 0), 2)
 
                 rospy.loginfo("Aruco detected, ID: {}".format(marker_ID))
-                
 
                 cv2.putText(frame, str(
                     marker_ID), (top_left[0], top_right[1] - 15), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 255, 0), 2)
@@ -74,10 +73,9 @@ class ArucoDetector():
 
         self.aruco_pub.publish(msg_out)
 
-	
+
 def main():
     rospy.init_node('EGB349_vision', anonymous=True)
-    
     rospy.loginfo("Processing images...")
 
     aruco_detect = ArucoDetector()
